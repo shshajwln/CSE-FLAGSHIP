@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "Spending Wrapped — Reality Check",
+  "version": "0.1.0",
+  "description": "See prices as hours of your life, capture purchases at checkout, and feed your Spending Wrapped.",
+  "permissions": ["storage"],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Spending Wrapped"
+  },
+  "content_scripts": [
+    {
+      "matches": ["http://localhost:5173/*", "http://127.0.0.1:5173/*"],
+      "js": ["content/syncBridge.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "http://localhost:5173/demo-store/*",
+        "http://127.0.0.1:5173/demo-store/*"
+      ],
+      "js": ["content/capture.js", "content/priceOverlay.js"],
+      "run_at": "document_idle"
+    },
+    {
+      "matches": [
+        "*://*.amazon.com/*",
+        "*://*.amazon.com.au/*",
+        "*://*.amazon.ca/*",
+        "*://*.amazon.co.uk/*",
+        "*://*.amazon.de/*",
+        "*://*.amazon.fr/*",
+        "*://*.amazon.it/*",
+        "*://*.amazon.es/*",
+        "*://*.amazon.in/*",
+        "*://*.amazon.sg/*",
+        "*://*.amazon.co.jp/*"
+      ],
+      "js": ["content/priceOverlay.js", "content/amazonCapture.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="stylesheet" href="popup.css" />
+</head>
+<body>
+  <h1>Spending <span>Wrapped</span></h1>
+  <p class="tag">Prices in hours of your life.</p>
+
+  <button id="wrapped-btn" class="wrapped-btn">📊 Open my Spending Wrapped</button>
+
+  <section class="card">
+    <h2>Your wage</h2>
+    <div class="wage-grid">
+      <label>
+        Hourly
+        <div class="input-wrap">$<input type="number" id="hourly" min="1" step="0.5" /></div>
+      </label>
+      <label>
+        or Salary
+        <div class="input-wrap">$<input type="number" id="salary" min="1000" step="1000" /></div>
+      </label>
+    </div>
+    <p class="note" id="wage-note"></p>
+  </section>
+
+  <section class="card">
+    <h2>Amazon</h2>
+    <button id="amz-btn" class="clear-btn">Open your Amazon order history</button>
+    <p class="note">An import button appears on that page — it pulls your real orders into your Wrapped.</p>
+  </section>
+
+  <section class="card">
+    <h2>Captured purchases <span id="cap-count" class="pill"></span></h2>
+    <div id="captured-list" class="cap-list"></div>
+    <div class="cap-total-row" id="cap-total-row" hidden>
+      <span>Total captured</span><span id="cap-total"></span>
+    </div>
+    <button id="clear-btn" class="clear-btn" hidden>Clear captured</button>
+  </section>
+
+  <script src="popup.js"></script>
+</body>
+</html>

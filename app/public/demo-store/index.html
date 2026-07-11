@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vantage Goods — Stuff You Definitely Need</title>
+  <link rel="stylesheet" href="store.css" />
+</head>
+<body>
+  <header class="store-header">
+    <h1>Vantage<span>Goods</span></h1>
+    <p class="tagline">Stuff you definitely need. Probably. Maybe.</p>
+  </header>
+
+  <main class="store-layout">
+    <section id="products" class="product-grid"></section>
+
+    <aside class="cart">
+      <h2>Your Cart</h2>
+      <div id="cart-items"></div>
+      <div class="cart-total-row">
+        <span>Total</span>
+        <span class="price" id="cart-total">$0.00</span>
+      </div>
+      <button id="checkout-btn" class="checkout-btn" disabled>Checkout</button>
+    </aside>
+  </main>
+
+  <script src="store.js"></script>
+</body>
+</html>

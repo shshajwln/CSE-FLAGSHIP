@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Order Confirmed — Vantage Goods</title>
+  <link rel="stylesheet" href="store.css" />
+</head>
+<body>
+  <div class="confirm-wrap">
+    <h1>🎉 Order confirmed!</h1>
+    <p class="confirm-sub">Your stuff is on its way. Your Wrapped is watching.</p>
+    <div id="order-lines"></div>
+    <div class="order-total">
+      <span>Total</span>
+      <span class="price" id="order-total"></span>
+    </div>
+    <a class="back-link" href="index.html">← Keep shopping (don't)</a>
+  </div>
+
+  <!-- The extension's capture script reads this -->
+  <script type="application/json" id="order-data"></script>
+
+  <script>
+    const order = JSON.parse(localStorage.getItem('ds_last_order') || 'null')
+    if (order) {
+      document.getElementById('order-lines').innerHTML = order.items
+        .map(
+          (i) =>
+            `<div class="order-line"><span>${i.item}</span><span class="price">$${i.price.toFixed(2)}</span></div>`
+        )
+        .join('')
+      const total = order.items.reduce((s, i) => s + i.price, 0)
+      document.getElementById('order-total').textContent = `$${total.toFixed(2)}`
+      document.getElementById('order-data').textContent = JSON.stringify(order)
+      window.dispatchEvent(new CustomEvent('demo-order-ready'))
+    } else {
+      document.querySelector('.confirm-wrap h1').textContent = 'No recent order'
+      document.querySelector('.confirm-sub').textContent = 'Go buy something you do not need first.'
+    }
+  </script>
+</body>
+</html>

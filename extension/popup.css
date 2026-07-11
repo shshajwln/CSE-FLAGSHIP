@@ -1,0 +1,140 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  width: 320px;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: #0d0d14;
+  color: #fff;
+  padding: 16px;
+}
+
+h1 { font-size: 1.2rem; font-weight: 900; }
+
+h1 span {
+  background: linear-gradient(90deg, #a78bfa, #f472b6);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.tag { color: #9f9fb3; font-size: 0.78rem; margin: 2px 0 14px; }
+
+.wrapped-btn {
+  width: 100%;
+  margin-bottom: 12px;
+  padding: 11px 0;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(90deg, #7c3aed, #db2777);
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+
+.wrapped-btn:hover { transform: scale(1.02); }
+
+.card {
+  background: #17171f;
+  border: 1px solid #2c2c3a;
+  border-radius: 12px;
+  padding: 13px;
+  margin-bottom: 12px;
+}
+
+.card h2 {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #cfcfdd;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pill {
+  background: #7c3aed;
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 0.72rem;
+}
+
+.wage-grid { display: flex; gap: 10px; }
+
+.wage-grid label {
+  flex: 1;
+  font-size: 0.75rem;
+  color: #9f9fb3;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: #0d0d14;
+  border: 1px solid #3a3a4d;
+  border-radius: 8px;
+  padding: 6px 8px;
+  color: #9f9fb3;
+}
+
+.input-wrap input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.note { margin-top: 8px; font-size: 0.72rem; color: #74748a; }
+
+.cap-list { display: flex; flex-direction: column; gap: 6px; }
+
+.cap-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 0.8rem;
+  padding: 5px 0;
+  border-bottom: 1px solid #23232f;
+}
+
+.cap-item .cap-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cap-item .cap-hrs { color: #4ade80; white-space: nowrap; font-weight: 600; }
+
+.cap-empty { color: #74748a; font-size: 0.78rem; }
+
+.cap-total-row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 0.85rem;
+  padding-top: 9px;
+}
+
+.clear-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 7px 0;
+  background: #2c2c3a;
+  color: #cfcfdd;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.78rem;
+  cursor: pointer;
+}
+
+.clear-btn:hover { background: #3a3a4d; }
