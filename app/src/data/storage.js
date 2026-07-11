@@ -42,6 +42,8 @@ export function getWage() {
 
 export function setWage(w) {
   localStorage.setItem(WAGE_KEY, String(w))
+  // tell the extension's sync bridge (if installed) so the popup stays in step
+  window.dispatchEvent(new CustomEvent('sw-wage-set', { detail: w }))
 }
 
 // only regenerates demo data — captured/imported real purchases are cleared
