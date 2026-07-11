@@ -10,7 +10,11 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://localhost:5173/*", "http://127.0.0.1:5173/*"],
+      "matches": [
+        "http://localhost:5173/*",
+        "http://127.0.0.1:5173/*",
+        "https://cse-flagship.vercel.app/*"
+      ],
       "js": ["content/syncBridge.js"],
       "run_at": "document_idle"
     },
