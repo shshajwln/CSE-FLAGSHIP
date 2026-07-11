@@ -188,7 +188,7 @@ function Intro({
         </p>
         {!useSeed && (
           <p className="wage-note">
-            Real data only — captured and imported purchases from the extension.
+            Real data only — purchases captured by the extension.
           </p>
         )}
       </motion.div>

@@ -1,10 +1,8 @@
-// Amazon integration, three parts:
+// Amazon integration, two parts:
 //  1. Cart snapshot — remembers what's in your cart (with prices) as you browse.
 //  2. Thank-you capture — when an order completes, turns the snapshot into purchases.
-//  3. Order-history import — a button on the Your Orders page that pulls real
-//     past orders into Spending Wrapped.
-// Amazon's DOM drifts, so every parser tries structured markup first and falls
-// back to text-pattern matching on the card/page text.
+// Amazon's DOM drifts, so parsing tries structured markup first and falls back
+// to text-pattern matching on the page text.
 ;(() => {
   // chrome.* throws in tabs that were open when the extension was reloaded
   function storageGet(defaults, cb) {
@@ -138,118 +136,9 @@
     )
   }
 
-  // ---------- 3. order-history import ----------
-
-  function parseOrderCards() {
-    const cards = document.querySelectorAll('.order-card, .js-order-card, .order')
-    const orders = []
-    cards.forEach((card) => {
-      const text = card.innerText
-      const idMatch = text.match(/\b(\d{3}-\d{7}-\d{7})\b/)
-      // US format "June 12, 2026" or AU/UK format "12 June 2026"
-      const MONTH = '(?:January|February|March|April|May|June|July|August|September|October|November|December)'
-      const dateMatch =
-        text.match(new RegExp(MONTH + '\\s+\\d{1,2},\\s+\\d{4}')) ||
-        text.match(new RegExp('\\d{1,2}\\s+' + MONTH + '\\s+\\d{4}'))
-      // prefer the amount labeled "Total"; fall back to the first $ amount
-      const totalMatch =
-        text.match(/total[\s\S]{0,30}?\$([\d,]+\.\d{2})/i) || text.match(/\$([\d,]+\.\d{2})/)
-      if (!idMatch || !dateMatch || !totalMatch) return
-
-      const titles = [
-        ...card.querySelectorAll(
-          '.yohtmlc-product-title, a[href*="/dp/"], a[href*="/gp/product/"]'
-        ),
-      ]
-        .map((el) => el.textContent.trim())
-        .filter(
-          (t) =>
-            t.length > 3 &&
-            !/^(buy it again|view|track|return|write|get product|ask|share|leave)/i.test(t)
-        )
-
-      orders.push({
-        orderId: idMatch[1],
-        date: new Date(dateMatch[0]).toISOString(),
-        total: parseFloat(totalMatch[1].replace(/,/g, '')),
-        items: [...new Set(titles)],
-      })
-    })
-    return orders
-  }
-
-  function importOrders(btn) {
-    const orders = parseOrderCards()
-    if (!orders.length) {
-      btn.textContent = 'No orders found on this page 😕'
-      return
-    }
-    storageGet({ sw_captured: [], sw_captured_ids: [] }, (data) => {
-      const captured = [...data.sw_captured]
-      const ids = [...data.sw_captured_ids]
-      let added = 0
-      for (const order of orders) {
-        if (ids.includes(order.orderId)) continue
-        ids.push(order.orderId)
-        added++
-        if (order.items.length) {
-          // per-item prices aren't shown on order cards; split the total evenly
-          const each = Math.round((order.total / order.items.length) * 100) / 100
-          order.items.forEach((title, i) => {
-            captured.push({
-              id: `${order.orderId}-${i}`,
-              date: order.date,
-              merchant: 'Amazon',
-              item: title.slice(0, 90),
-              category: categorize(title),
-              price: each,
-              source: 'imported',
-            })
-          })
-        } else {
-          captured.push({
-            id: `${order.orderId}-0`,
-            date: order.date,
-            merchant: 'Amazon',
-            item: 'Amazon order',
-            category: 'Misc',
-            price: order.total,
-            source: 'imported',
-          })
-        }
-      }
-      storageSet({ sw_captured: captured, sw_captured_ids: ids }, () => {
-        btn.textContent =
-          added > 0
-            ? `Imported ${added} order${added === 1 ? '' : 's'} ✓ (${ids.length} total)`
-            : 'Already imported — all caught up ✓'
-      })
-    })
-  }
-
-  function offerImport() {
-    if (document.getElementById('sw-import-btn')) return
-    const btn = document.createElement('button')
-    btn.id = 'sw-import-btn'
-    btn.textContent = '📊 Import this page into Spending Wrapped'
-    btn.style.cssText = `
-      position: fixed; bottom: 24px; right: 24px; z-index: 999999;
-      padding: 12px 18px; border: none; border-radius: 12px; cursor: pointer;
-      background: linear-gradient(90deg, #7c3aed, #db2777); color: #fff;
-      font: 700 14px system-ui, sans-serif; box-shadow: 0 6px 24px rgba(0,0,0,.35);
-    `
-    btn.addEventListener('click', () => importOrders(btn))
-    document.body.appendChild(btn)
-  }
-
   // ---------- route by URL ----------
 
   const path = location.pathname
   if (path.includes('/cart') || path.includes('/gp/cart')) watchCart()
   if (/thankyou|\/checkout\/p\//.test(location.href)) captureThankYou()
-  if (/order-history|your-orders|your-account\/order/.test(path)) {
-    offerImport()
-    // orders page is client-rendered; keep trying until cards exist
-    new MutationObserver(offerImport).observe(document.body, { childList: true, subtree: true })
-  }
 })()
