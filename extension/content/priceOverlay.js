@@ -76,16 +76,39 @@
     if (el.matches('.a-text-price, [data-a-strike="true"]')) return true
     if (el.closest('[data-a-strike="true"], .a-text-price, .basisPrice')) return true
     if (getComputedStyle(el).textDecorationLine.includes('line-through')) return true
-    // small wrapper whose text is labeled as an old price, e.g. "RRP: $1,599.00"
-    const p = el.parentElement
-    if (
-      p &&
-      p.textContent.length < 60 &&
-      /\b(RRP|List Price|Was|Typical price)\b/i.test(p.textContent)
-    ) {
-      return true
-    }
+    // an old-price label directly before this element, e.g. "RRP: [$1,599.00]".
+    // Must be immediately preceding — the current price often shares a parent
+    // with the RRP text, and checking the whole parent would suppress it too.
+    const before = textBefore(el)
+    if (/(RRP|List Price|Was|Typical price)\s*:?\s*$/i.test(before)) return true
     return false
+  }
+
+  // Discount/promo amounts ("$6.00 off", "Save $40.00 when you buy $300.00")
+  // aren't prices — badging them turns the overlay into deal marketing.
+  function isPromoAmount(el) {
+    const p = el.parentElement
+    return (
+      p &&
+      p.textContent.length < 80 &&
+      /\b(save|off|coupon|promo|promotion|voucher|rebate|discount)\b/i.test(p.textContent)
+    )
+  }
+
+  function skipBadge(el) {
+    return isStruckPrice(el) || isPromoAmount(el)
+  }
+
+  // text inside el's parent that comes before el itself
+  function textBefore(el) {
+    const p = el.parentElement
+    if (!p) return ''
+    let out = ''
+    for (const n of p.childNodes) {
+      if (n === el || (n.contains && n.contains(el))) break
+      out += n.textContent
+    }
+    return out.trim()
   }
 
   let badgeCount = 0
@@ -93,7 +116,7 @@
   function annotateAll(selector, getPriceText) {
     document.querySelectorAll(selector + ':not([' + DONE_ATTR + '])').forEach((el) => {
       el.setAttribute(DONE_ATTR, '1')
-      if (isStruckPrice(el)) return
+      if (skipBadge(el)) return
       const price = parsePrice(getPriceText(el))
       if (price && price > 0.5) {
         el.insertAdjacentElement('afterend', makeBadge(price))
@@ -121,7 +144,7 @@
     for (const p of hits) {
       if (p.hasAttribute(DONE_ATTR)) continue
       p.setAttribute(DONE_ATTR, '1')
-      if (isStruckPrice(p)) continue
+      if (skipBadge(p)) continue
       const price = parsePrice(p.textContent)
       if (price && price > 0.5) {
         p.insertAdjacentElement('afterend', makeBadge(price))
